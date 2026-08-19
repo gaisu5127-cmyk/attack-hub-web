@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATTACK HUB | Admin Panel</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #09090b; color: #fff; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        h1 { color: #3b82f6; text-align: center; margin-bottom: 30px; }
+        .panel { background: #18181b; padding: 25px; border-radius: 12px; border: 1px solid #27272a; margin-bottom: 20px; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+        button { padding: 10px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
+        .btn-1d { background: #10b981; }
+        .btn-5d { background: #059669; }
+        .btn-7d { background: #3b82f6; }
+        .btn-30d { background: #8b5cf6; }
+        .btn-per { background: #ec4899; }
+        .btn-del { background: #ef4444; }
+        button:hover { opacity: 0.85; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #121214; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #27272a; font-size: 14px; }
+        th { background: #1f1f23; color: #a1a1aa; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .bg-unused { background: #374151; color: #9ca3af; }
+        .bg-used { background: #065f46; color: #34d399; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ ATTACK HUB - Admin Control Panel</h1>
+        
+        <div class="panel">
+            <h3>สร้างคีย์ใหม่</h3>
+            <p style="color: #a1a1aa; font-size: 13px;">เลือกประเภทระยะเวลาคีย์ที่ต้องการสร้าง:</p>
+            <div class="btn-group">
+                <button class="btn-1d" onclick="generateKey('1 วัน')">สร้างคีย์ 1 วัน</button>
+                <button class="btn-5d" onclick="generateKey('5 วัน')">สร้างคีย์ 5 วัน</button>
+                <button class="btn-7d" onclick="generateKey('7 วัน')">สร้างคีย์ 7 วัน</button>
+                <button class="btn-30d" onclick="generateKey('30 วัน')">สร้างคีย์ 30 วัน</button>
+                <button class="btn-per" onclick="generateKey('ถาวร')">สร้างคีย์ถาวร</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>จัดการรายการคีย์ทั้งหมด</h3>
+                <button class="btn-del" onclick="deleteAllKeys()">ลบคีย์ทั้งหมดทีเดียว</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+                        <th>คีย์ (Key)</th>
+                        <th>อายุการใช้งาน</th>
+                        <th>สถานะ</th>
+                        <th>HWID (รหัสเครื่อง)</th>
+                        <th>จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="keyList">
+                    <!-- ข้อมูลจำลองแสดงผล -->
+                    <tr>
+                        <td><input type="checkbox" class="keyCheckbox"></td>
+                        <td><code style="color: #60a5fa;">AT-X9k2Pq8L-Secure</code></td>
+                        <td>7 วัน</td>
+                        <td><span class="badge bg-used">ถูกใช้งานแล้ว</span></td>
+                        <td><code>HWID_USER_99821</code></td>
+                        <td>
+                            <button style="background: #f59e0b; padding: 5px 10px; font-size: 12px;" onclick="resetHWID(this)">รีเซ็ต HWID</button>
+                            <button class="btn-del" style="padding: 5px 10px; font-size: 12px;" onclick="deleteKey(this)">ลบ</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // ฟังก์ชันจำลองการทำงานปุ่มต่างๆ (สามารถนำไปต่อยอดกับ Backend จริงได้ครับ)
+        function generateKey(duration) {
+            const randomStr = Math.random().toString(36).substring(2, 10).toUpperCase();
+            const newKey = "AT-" + randomStr + "-" + Math.random().toString(36).substring(2, 6).toUpperCase();
+            alert("สร้างคีย์สำเร็จ (" + duration + "): " + newKey);
+            // โค้ดเพิ่มแถวลงในตาราง HTML จริงจะใส่ตรงนี้
+        }
+
+        function deleteKey(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+
+        function deleteAllKeys() {
+            if(confirm("คุณต้องการลบคีย์ทั้งหมดจริงๆใช่ไหม?")) {
+                document.getElementById('keyList').innerHTML = "";
+            }
+        }
+
+        function resetHWID(button) {
+            const row = button.closest('tr');
+            const hwidCell = row.querySelectorAll('td')[4];
+            hwidCell.innerHTML = '<span style="color: #9ca3af;">ยังไม่ผูกเครื่อง ( ว่าง )</span>';
+            const statusCell = row.querySelectorAll('td')[3];
+            statusCell.innerHTML = '<span class="badge bg-unused">ยังไม่ถูกใช้</span>';
+            alert("รีเซ็ตรหัสเครื่อง (HWID) สำเร็จแล้ว!");
+        }
+    </script>
+</body>
+</html>
